@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Fletes</title>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
+	<link rel="stylesheet" href="general.css">
+    <script defer src="app.js"></script>
+	<script defer src="https://cdn.jsdelivr.net/npm/@shaun/alpinejs-router@1.3.5/dist/cdn.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+<body>
+	<div id="app" x-data="contexto()">
+		<header>
+			<h1>Fletes.com</h1>
+			<nav>
+				<div class="cuadro">
+				<a x-link href = "/"> Inicio </a>
+				</div>
+				<div class="cuadro">
+				<a x-link href = "/unidades"> Todas las unidades </a>
+				</div>
+				<div class="cuadro">
+				<a x-link href = "/nuevaunidad"> Agregar unidad </a>
+				</div>
+				<div class="cuadro">
+				<a x-link href = "/choferes"> Todos los choferes  </a>
+				</div>
+				<div class="cuadro">
+				<a x-link href = "/nuevo_flete"> Crear nuevo Flete </a>
+				</div>
+				<div class="cuadro">
+				<a x-link href = "/clientes">CLientes</a>
+				</div>
+			</nav>
+		</header>
+
+		<main>
+			<template x-route="/"             template="/Componentes/home.html"></template>
+			<template x-route="/unidades"     template="/Componentes/unidades.html"></template>
+			<template x-route="/nuevaunidad"  template="/Componentes/nuevaunidad.html"></template>
+			<template x-route="/choferes"     template="/Componentes/choferes.html"></template>
+			<template x-route="/clientes"     template="/Componentes/clientes.html"></template>
+			<template x-route="/nuevo_flete"  template="/Componentes/nuevo_flete.html"></template>
+		</main>
+	</div>
+</body>
+</html>

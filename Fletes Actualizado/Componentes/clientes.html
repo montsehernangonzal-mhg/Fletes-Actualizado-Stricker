@@ -1,0 +1,28 @@
+<section>
+    <h2>clientes</h2>
+
+    <div class="tabla">
+        <table>
+            <thead>
+                <tr>
+                    <th>nombre</th>
+                    <th>telefono</th>
+                    <th>saldo pendiente</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <template x-for="c in Clientes" :key="c.id">
+                    <tr>
+                        <td x-text="c.nombre"></td>
+                        <td x-text="c.telefono"></td>
+                        <td x-text="c.saldo_pendiente"></td>
+                    </tr>
+                </template>
+            </tbody>
+        </table>
+    </div>
+
+    <p x-show="Clientes.length == 0">no hay clientes registrados</p>
+
+</section>
