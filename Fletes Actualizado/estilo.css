@@ -4,6 +4,9 @@ main{
 	font-family: Verdana;
 }
 
+h1 {
+    font-family: Lucida Handwriting;
+}
 
 input,select{
 	display: block;
