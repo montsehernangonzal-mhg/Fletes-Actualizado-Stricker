@@ -1,0 +1,28 @@
+<section>
+    <h2>Unidades</h2>
+
+    <div class="tabla">
+        <table>
+            <thead>
+                <tr>
+                    <th>placas</th>
+                    <th>modelo</th>
+                    <th>estatus</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <template x-for="u in Unidades" :key="u.id">
+                    <tr>
+                        <td x-text="u.placas"></td>
+                        <td x-text="u.modelo"></td>
+                        <td x-text="u.estatus"></td>
+                    </tr>
+                </template>
+            </tbody>
+        </table>
+    </div>
+
+    <p x-show="Unidades.length == 0">no hay clientes registrados</p>
+
+</section>
