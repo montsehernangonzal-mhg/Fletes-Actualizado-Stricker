@@ -98,6 +98,42 @@ function get_clientes($pdo, $id = null) {
     }
 }
 
+function get_choferes($pdo, $id = null) {
+    if ($id) {
+        $stmt = $pdo->prepare("SELECT * FROM choferes WHERE id = :id");
+        $stmt->execute([':id' => $id]);
+        $choferes = $stmt->fetch();
+
+        if ($choferes) {
+            responder(200, $choferes);
+        } else {
+            responder(404, ["mensaje" => "Chofer no encontrado"]);
+        }
+    } else {
+        $stmt = $pdo->query("SELECT * FROM choferes");
+        $choferes = $stmt->fetchAll();
+        responder(200, $choferes);
+    }
+}
+
+function get_unidades($pdo, $id = null) {
+    if ($id) {
+        $stmt = $pdo->prepare("SELECT * FROM unidades WHERE id = :id");
+        $stmt->execute([':id' => $id]);
+        $unidades = $stmt->fetch();
+
+        if ($unidades) {
+            responder(200, $unidades);
+        } else {
+            responder(404, ["mensaje" => "Unidad no encontrada"]);
+        }
+    } else {
+        $stmt = $pdo->query("SELECT * FROM unidades");
+        $unidades = $stmt->fetchAll();
+        responder(200, $unidades);
+    }
+}
+
 /**
  * Maneja las peticiones POST (Crear nuevo clientes)
  */
@@ -117,6 +153,46 @@ function create_cliente($pdo, $data) {
 
     responder(201, [
         "mensaje" => "Cliente creado con éxito",
+        "id" => $pdo->lastInsertId()
+    ]);
+}
+
+function create_choferes($pdo, $data) {
+    if (empty($data['nombre']) || !isset($data['licencia']) || !isset($data['estatus'])) {
+        responder(400, ["error" => "Datos incompletos. Se requiere nombre, licencia y estatus."]);
+        return;
+    }
+
+    $sql = "INSERT INTO clientes (nombre, licencia, estatus) VALUES (:nombre, :licencia, :estatus)";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([
+        ':nombre' => $data['nombre'],
+        ':licencia' => $data['licencia'],
+        ':estatus' => $data['estatus']
+    ]);
+
+    responder(201, [
+        "mensaje" => "Chofer creado con éxito",
+        "id" => $pdo->lastInsertId()
+    ]);
+}
+
+function create_unidades($pdo, $data) {
+    if (empty($data['placas']) || !isset($data['modelo']) || !isset($data['estatus'])) {
+        responder(400, ["error" => "Datos incompletos. Se requiere placas, modelo y estatus."]);
+        return;
+    }
+
+    $sql = "INSERT INTO clientes (placas, modelo, estatus) VALUES (:placas, :modelo, :estatus)";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([
+        ':placas' => $data['placas'],
+        ':modelo' => $data['modelo'],
+        ':estatus' => $data['estatus']
+    ]);
+
+    responder(201, [
+        "mensaje" => "Unidad creada con éxito",
         "id" => $pdo->lastInsertId()
     ]);
 }
@@ -151,6 +227,61 @@ function update_cliente($pdo, $id, $data) {
     }
 }
 
+function update_choferes($pdo, $id, $data) {
+    if (!$id) {
+        responder(400, ["error" => "Se requiere el parámetro 'id' en la URL."]);
+        return;
+    }
+
+    if (empty($data['nombre']) || !isset($data['licencia']) || !isset($data['estatus'])) {
+        responder(400, ["error" => "Datos incompletos para actualizar."]);
+        return;
+    }
+
+    $sql = "UPDATE fletes SET nombre = :nombre, licencia = :licencia, estatus = :estatus WHERE id = :id";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([
+        ':nombre' => $data['nombre'],
+        ':licencia' => $data['licencia'],
+        ':estatus' => $data['estatus'],
+        ':id' => $id
+    ]);
+
+    if ($stmt->rowCount() > 0) {
+        responder(200, ["mensaje" => "Chofer actualizado con éxito"]);
+    } else {
+        responder(404, ["mensaje" => "Chofer no encontrado o sin cambios"]);
+    }
+}
+
+function update_unidades($pdo, $id, $data) {
+    if (!$id) {
+        responder(400, ["error" => "Se requiere el parámetro 'id' en la URL."]);
+        return;
+    }
+
+    if (empty($data['placas']) || !isset($data['modelo']) || !isset($data['estatus'])) {
+        responder(400, ["error" => "Datos incompletos para actualizar."]);
+        return;
+    }
+
+    $sql = "UPDATE fletes SET placas = :placas, modelo = :modelo, estatus = :estatus WHERE id = :id";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([
+        ':placas' => $data['placas'],
+        ':modelo' => $data['modelo'],
+        ':estatus' => $data['estatus'],
+        ':id' => $id
+    ]);
+
+    if ($stmt->rowCount() > 0) {
+        responder(200, ["mensaje" => "Unidad actualizada con éxito"]);
+    } else {
+        responder(404, ["mensaje" => "Unidad no encontrada o sin cambios"]);
+    }
+}
+
+
 /**
  * Maneja las peticiones DELETE (Eliminar Clientes por ID)
  */
@@ -167,6 +298,38 @@ function delete_cliente($pdo, $id) {
         responder(200, ["mensaje" => "Cliente eliminado con éxito"]);
     } else {
         responder(404, ["mensaje" => "Cliente no encontrado"]);
+    }
+}
+
+function delete_choferes($pdo, $id) {
+    if (!$id) {
+        responder(400, ["error" => "Se requiere el parámetro 'id' en la URL."]);
+        return;
+    }
+
+    $stmt = $pdo->prepare("DELETE FROM choferes WHERE id = :id");
+    $stmt->execute([':id' => $id]);
+
+    if ($stmt->rowCount() > 0) {
+        responder(200, ["mensaje" => "Chofer eliminado con éxito"]);
+    } else {
+        responder(404, ["mensaje" => "Chofer no encontrado"]);
+    }
+}
+
+function delete_unidades($pdo, $id) {
+    if (!$id) {
+        responder(400, ["error" => "Se requiere el parámetro 'id' en la URL."]);
+        return;
+    }
+
+    $stmt = $pdo->prepare("DELETE FROM unidades WHERE id = :id");
+    $stmt->execute([':id' => $id]);
+
+    if ($stmt->rowCount() > 0) {
+        responder(200, ["mensaje" => "Unidad eliminada con éxito"]);
+    } else {
+        responder(404, ["mensaje" => "Unidad no encontrada"]);
     }
 }
 
