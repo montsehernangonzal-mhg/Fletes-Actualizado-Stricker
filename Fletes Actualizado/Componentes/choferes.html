@@ -6,23 +6,23 @@
             <thead>
                 <tr>
                     <th>nombre</th>
-                    <th>telefono</th>
-                    <th>saldo pendiente</th>
+                    <th>licencia</th>
+                    <th>estatus</th>
                 </tr>
             </thead>
 
             <tbody>
-                <template x-for="c in Clientes" :key="c.id">
+                <template x-for="c in Choferes" :key="c.id">
                     <tr>
                         <td x-text="c.nombre"></td>
-                        <td x-text="c.telefono"></td>
-                        <td x-text="c.saldo_pendiente"></td>
+                        <td x-text="c.licencia"></td>
+                        <td x-text="c.estatus"></td>
                     </tr>
                 </template>
             </tbody>
         </table>
     </div>
 
-    <p x-show="Clientes.length == 0">no hay clientes registrados</p>
+    <p x-show="Choferes.length == 0">no hay clientes registrados</p>
 
 </section>
