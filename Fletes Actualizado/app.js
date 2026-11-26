@@ -102,7 +102,51 @@ function contexto() {
 				style: 'currency',
 				currency: 'MXN'
 			});
-		}
+		},
+
+
+		clienteEditando: null,
+		formEditarCliente: { nombre: '', telefono: '', saldo_pendiente: 0 },
+		mensaje_cliente: '',
+
+		editar_cliente(c) {
+			this.mensaje_cliente = '';
+			this.clienteEditando = c.id;
+			this.formEditarCliente = {
+				nombre: c.nombre,
+				telefono: c.telefono,
+				saldo_pendiente: c.saldo_pendiente
+			};
+		},
+
+		cancelar_edicion_cliente() {
+			this.clienteEditando = null;
+			this.mensaje_cliente = '';
+		},
+
+		async actualizar_cliente() {
+			this.mensaje_cliente = '';
+			if (!this.formEditarCliente.nombre.trim()) {
+				this.mensaje_cliente = 'El nombre es obligatorio';
+				return;
+			}
+			try {
+				const res = await fetch(`api.php?recurso=clientes&id=${this.clienteEditando}`, {
+					method: 'PUT',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({
+						...this.formEditarCliente,
+						saldo_pendiente: Number(this.formEditarCliente.saldo_pendiente)
+					})
+				});
+				const data = await res.json();
+				if (!res.ok) throw new Error(data.error || data.mensaje || 'No se pudo actualizar el cliente');
+				this.clienteEditando = null;
+				await this.cargarRecurso('clientes', 'Clientes');
+			} catch (error) {
+				this.mensaje_cliente = error.message;
+			}
+		},
 	};
 }
 
