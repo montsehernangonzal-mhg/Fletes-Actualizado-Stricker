@@ -1,6 +1,19 @@
 <section>
     <h2>Unidades</h2>
 
+    <div x-show="unidadEditando !== null" x-cloak>
+        <h3>editar unidad</h3>
+        <input type="text" placeholder="placas" x-model="formEditarUnidad.placas">
+        <input type="text" placeholder="modelo" x-model="formEditarUnidad.modelo">
+        <select x-model="formEditarUnidad.estatus">
+            <option value="Disponible">Disponible</option>
+            <option value="En Ruta">En Ruta</option>
+        </select>
+        <button @click="actualizar_unidad()">Guardar cambios</button>
+        <button @click="cancelar_edicion_unidad()">Cancelar</button>
+        <p x-text="mensaje_unidad"></p>
+    </div>
+
     <div class="tabla">
         <table>
             <thead>
@@ -18,7 +31,10 @@
                         <td x-text="u.placas"></td>
                         <td x-text="u.modelo"></td>
                         <td x-text="u.estatus"></td>
-                        <td><button @click="delete_unidad(u.id)">Borrar</button></td>
+                        <td>
+                            <button @click="editar_unidad(u)">Editar</button>
+                            <button @click="delete_unidad(u.id)">Borrar</button>
+                        </td>
                     </tr>
                 </template>
             </tbody>
