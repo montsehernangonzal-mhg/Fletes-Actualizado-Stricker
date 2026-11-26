@@ -147,6 +147,133 @@ function contexto() {
 				this.mensaje_cliente = error.message;
 			}
 		},
+
+		// ===== EDITAR CHOFERES =====
+		choferEditando: null,
+		formEditarChofer: { nombre: '', licencia: '', estatus: 'Disponible' },
+		mensaje_chofer: '',
+
+		editar_chofer(ch) {
+			this.mensaje_chofer = '';
+			this.choferEditando = ch.id;
+			this.formEditarChofer = { nombre: ch.nombre, licencia: ch.licencia, estatus: ch.estatus };
+		},
+
+		cancelar_edicion_chofer() {
+			this.choferEditando = null;
+			this.mensaje_chofer = '';
+		},
+
+		async actualizar_chofer() {
+			this.mensaje_chofer = '';
+			if (!this.formEditarChofer.nombre.trim() || !this.formEditarChofer.licencia.trim()) {
+				this.mensaje_chofer = 'Nombre y licencia son obligatorios';
+				return;
+			}
+			try {
+				const res = await fetch(`api.php?recurso=choferes&id=${this.choferEditando}`, {
+					method: 'PUT',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify(this.formEditarChofer)
+				});
+				const data = await res.json();
+				if (!res.ok) throw new Error(data.error || data.mensaje || 'No se pudo actualizar el chofer');
+				this.choferEditando = null;
+				await this.cargarRecurso('choferes', 'Choferes');
+			} catch (error) {
+				this.mensaje_chofer = error.message;
+			}
+		},
+
+		// ===== EDITAR UNIDADES =====
+		unidadEditando: null,
+		formEditarUnidad: { placas: '', modelo: '', estatus: 'Disponible' },
+		mensaje_unidad: '',
+
+		editar_unidad(u) {
+			this.mensaje_unidad = '';
+			this.unidadEditando = u.id;
+			this.formEditarUnidad = { placas: u.placas, modelo: u.modelo, estatus: u.estatus };
+		},
+
+		cancelar_edicion_unidad() {
+			this.unidadEditando = null;
+			this.mensaje_unidad = '';
+		},
+
+		async actualizar_unidad() {
+			this.mensaje_unidad = '';
+			if (!this.formEditarUnidad.placas.trim()) {
+				this.mensaje_unidad = 'Las placas son obligatorias';
+				return;
+			}
+			try {
+				const res = await fetch(`api.php?recurso=unidades&id=${this.unidadEditando}`, {
+					method: 'PUT',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify(this.formEditarUnidad)
+				});
+				const data = await res.json();
+				if (!res.ok) throw new Error(data.error || data.mensaje || 'No se pudo actualizar la unidad');
+				this.unidadEditando = null;
+				await this.cargarRecurso('unidades', 'Unidades');
+			} catch (error) {
+				this.mensaje_unidad = error.message;
+			}
+		},
+
+		// ===== EDITAR FLETES =====
+		fleteEditando: null,
+		formEditarFlete: { cliente_id: '', chofer_id: '', unidad_id: '', origen: '', destino: '', costo: '', estatus: 'Pendiente' },
+		mensaje_edicion_flete: '',
+
+		editar_flete(f) {
+			this.mensaje_edicion_flete = '';
+			this.fleteEditando = f.id;
+			this.formEditarFlete = {
+				cliente_id: f.cliente_id ?? '',
+				chofer_id: f.chofer_id ?? '',
+				unidad_id: f.unidad_id ?? '',
+				origen: f.origen,
+				destino: f.destino,
+				costo: f.costo,
+				estatus: f.estatus
+			};
+		},
+
+		cancelar_edicion_flete() {
+			this.fleteEditando = null;
+			this.mensaje_edicion_flete = '';
+		},
+
+		async actualizar_flete() {
+			this.mensaje_edicion_flete = '';
+			const f = this.formEditarFlete;
+			if (!f.origen.trim() || !f.destino.trim() || f.costo === '') {
+				this.mensaje_edicion_flete = 'Origen, destino y costo son obligatorios';
+				return;
+			}
+			try {
+				const res = await fetch(`api.php?recurso=fletes&id=${this.fleteEditando}`, {
+					method: 'PUT',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({
+						...f,
+						cliente_id: f.cliente_id ? Number(f.cliente_id) : null,
+						chofer_id: f.chofer_id ? Number(f.chofer_id) : null,
+						unidad_id: f.unidad_id ? Number(f.unidad_id) : null,
+						costo: Number(f.costo)
+					})
+				});
+				const data = await res.json();
+				if (!res.ok) throw new Error(data.error || data.mensaje || 'No se pudo actualizar el flete');
+				this.fleteEditando = null;
+				// Se recarga todo porque cambiar un flete puede modificar choferes, unidades y saldos
+				await this.cargarTodo();
+			} catch (error) {
+				this.mensaje_edicion_flete = error.message;
+			}
+		},
 	};
 }
 

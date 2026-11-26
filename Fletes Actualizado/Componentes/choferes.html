@@ -1,6 +1,19 @@
 <section>
     <h2>Choferes</h2>
 
+    <div x-show="choferEditando !== null" x-cloak>
+        <h3>editar chofer</h3>
+        <input type="text" placeholder="nombre" x-model="formEditarChofer.nombre">
+        <input type="text" placeholder="licencia" x-model="formEditarChofer.licencia">
+        <select x-model="formEditarChofer.estatus">
+            <option value="Disponible">Disponible</option>
+            <option value="En Ruta">En Ruta</option>
+        </select>
+        <button @click="actualizar_chofer()">Guardar cambios</button>
+        <button @click="cancelar_edicion_chofer()">Cancelar</button>
+        <p x-text="mensaje_chofer"></p>
+    </div>
+
     <div class="tabla">
         <table>
             <thead>
