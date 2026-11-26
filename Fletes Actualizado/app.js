@@ -25,20 +25,26 @@ function contexto() {
 			]);
 		},
 
-		async delete_unidad(id) {
-		  if (!id) return;
-		  try {
-		    const res = await fetch(`api.php?id=${id}`, {
-		      method: 'DELETE'
-		    });
-		    const data = await res.json();
-		    if (data.status === 'success' || res.ok) {
-		      this.Unidades = this.Unidades.filter((item) => item.id !== id);
-		    }
-		  } catch (err) {
-		    console.error('Error al borrar unidad:', err);
-		  }
+		async eliminar_recurso(recurso, propiedad, id, etiqueta) {
+			if (!confirm(`¿Estás seguro de eliminar ${etiqueta}?`)) return;
+			try {
+				const res = await fetch(`api.php?recurso=${recurso}&id=${id}`, {
+					method: 'DELETE'
+				});
+				const data = await res.json().catch(() => ({}));
+				if (!res.ok) {
+					alert(data.error || data.mensaje || `No se pudo eliminar (HTTP ${res.status})`);
+					return;
+				}
+				await this.cargarRecurso(recurso, propiedad);
+			} catch (e) {
+				console.error(`Error al eliminar ${recurso}:`, e);
+			}
 		},
+
+		delete_cliente(id) { return this.eliminar_recurso('clientes', 'Clientes', id, 'este cliente'); },
+		delete_unidad(id)  { return this.eliminar_recurso('unidades', 'Unidades', id, 'esta unidad'); },
+		delete_chofer(id)  { return this.eliminar_recurso('choferes', 'Choferes', id, 'este chofer'); },
 
 		async cargarRecurso(recurso, propiedad) {
 			try {

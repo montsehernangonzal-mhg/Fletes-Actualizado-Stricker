@@ -121,11 +121,15 @@ function delete_cliente($pdo, $id) {
         responder(400, ["error" => "Se requiere el parámetro 'id'."]);
         return;
     }
+    try{
     $stmt = $pdo->prepare("DELETE FROM clientes WHERE id = :id");
     $stmt->execute([':id' => $id]);
     $stmt->rowCount() > 0
         ? responder(200, ["mensaje" => "Cliente eliminado con éxito"])
         : responder(404, ["mensaje" => "Cliente no encontrado"]);
+    } catch (PDOException $e) {
+        responder(409, ["error" => "No se puede eliminar: el cliente tiene fletes asociados."]);
+    }
 }
 
 // ==========================================
