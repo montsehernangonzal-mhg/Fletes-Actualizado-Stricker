@@ -182,12 +182,15 @@ function delete_chofer($pdo, $id) {
     if (!$id) {
         responder(400, ["error" => "Se requiere el parámetro 'id'."]);
         return;
-    }
+    } try{
     $stmt = $pdo->prepare("DELETE FROM choferes WHERE id = :id");
     $stmt->execute([':id' => $id]);
     $stmt->rowCount() > 0
         ? responder(200, ["mensaje" => "Chofer eliminado con éxito"])
         : responder(404, ["mensaje" => "Chofer no encontrado"]);
+    } catch (PDOException $e) {
+        responder(409, ["error" => "No se puede eliminar: el cliente tiene fletes asociados."]);
+    }
 }
 
 // ==========================================

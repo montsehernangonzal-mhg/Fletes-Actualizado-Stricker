@@ -45,6 +45,7 @@ function contexto() {
 		delete_cliente(id) { return this.eliminar_recurso('clientes', 'Clientes', id, 'este cliente'); },
 		delete_unidad(id)  { return this.eliminar_recurso('unidades', 'Unidades', id, 'esta unidad'); },
 		delete_chofer(id)  { return this.eliminar_recurso('choferes', 'Choferes', id, 'este chofer'); },
+		delete_flete(id) { return this.eliminar_recurso('fletes', 'Fletes', id, 'este flete'); },
 
 		async cargarRecurso(recurso, propiedad) {
 			try {

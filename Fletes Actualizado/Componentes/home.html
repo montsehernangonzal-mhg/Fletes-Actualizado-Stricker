@@ -11,6 +11,7 @@
 				<th>Unidad</th>
 				<th>Cliente</th>
 				<th>Costo</th>
+				<th>Opciones</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -22,6 +23,7 @@
 					<td x-text="obtener_info_unidad(f.unidad)"></td>
 					<td x-text="obtener_nombre_cliente(f.cliente_id)"></td>
 					<td x-text="formato_dinero(f.tarifa)"></td>
+					<td><button @click="delete_flete(f.id)">Borrar</button></td>
 				</tr>
 			</template>
 		</tbody>
@@ -37,6 +39,7 @@
 				<th>Unidad</th>
 				<th>Cliente</th>
 				<th>Costo</th>
+				<th>Opciones</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -48,6 +51,7 @@
 					<td x-text="obtener_info_unidad(f.unidad)"></td>
 					<td x-text="obtener_nombre_cliente(f.cliente_id)"></td>
 					<td x-text="formato_dinero(f.tarifa)"></td>
+					<td><button @click="delete_flete(f.id)">Borrar</button></td>
 				</tr>
 			</template>
 		</tbody>
@@ -63,6 +67,8 @@
 				<th>Unidad</th>
 				<th>Cliente</th>
 				<th>Costo</th>
+				<th>Opciones</th>
+
 			</tr>
 		</thead>
 		<tbody>
@@ -74,6 +80,7 @@
 					<td x-text="obtener_info_unidad(f.unidad)"></td>
 					<td x-text="obtener_nombre_cliente(f.cliente_id)"></td>
 					<td x-text="formato_dinero(f.tarifa)"></td>
+					<td><button @click="delete_flete(f.id)">Borrar</button></td>
 				</tr>
 			</template>
 		</tbody>
@@ -89,6 +96,7 @@
 				<th>Unidad</th>
 				<th>Cliente</th>
 				<th>Costo</th>
+				<th>Opciones</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -100,6 +108,7 @@
 					<td x-text="obtener_info_unidad(f.unidad)"></td>
 					<td x-text="obtener_nombre_cliente(f.cliente_id)"></td>
 					<td x-text="formato_dinero(f.tarifa)"></td>
+					<td><button @click="delete_flete(f.id)">Borrar</button></td>
 				</tr>
 			</template>
 		</tbody>
