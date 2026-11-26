@@ -1,0 +1,49 @@
+<section>
+    <h2>agregar flete</h2>
+
+    <form x-on:submit.prevent="guardar_flete()">
+        <label for="cliente_id">cliente</label>
+        <select id="cliente_id" x-model="formFlete.cliente_id" required>
+            <option value="">selecciona un cliente</option>
+            <template x-for="cliente in Clientes" :key="cliente.id">
+                <option :value="cliente.id" x-text="cliente.nombre"></option>
+            </template>
+        </select>
+
+        <label for="chofer_id">chofer</label>
+        <select id="chofer_id" x-model="formFlete.chofer_id">
+            <option value="">sin asignar</option>
+            <template x-for="chofer in Choferes" :key="chofer.id">
+                <option :value="chofer.id" x-text="chofer.nombre"></option>
+            </template>
+        </select>
+
+        <label for="unidad_id">unidad</label>
+        <select id="unidad_id" x-model="formFlete.unidad_id">
+            <option value="">sin asignar</option>
+            <template x-for="unidad in Unidades" :key="unidad.id">
+                <option :value="unidad.id" x-text="unidad.placas + ' - ' + unidad.modelo"></option>
+            </template>
+        </select>
+
+        <label for="origen">origen</label>
+        <input id="origen" type="text" x-model="formFlete.origen" required>
+
+        <label for="destino">destino</label>
+        <input id="destino" type="text" x-model="formFlete.destino" required>
+
+        <label for="costo">costo</label>
+        <input id="costo" type="number" min="0" step="0.01" x-model="formFlete.costo" required>
+
+        <label for="estatus">estatus</label>
+        <select id="estatus" x-model="formFlete.estatus" required>
+            <option value="Pendiente">pendiente</option>
+            <option value="En Tránsito">en transito</option>
+            <option value="Entregado">entregado</option>
+            <option value="Pagado">pagado</option>
+        </select>
+
+        <button type="submit">guardar flete</button>
+        <p x-show="mensaje_flete" x-text="mensaje_flete"></p>
+    </form>
+</section>

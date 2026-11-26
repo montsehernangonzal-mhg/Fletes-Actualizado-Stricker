@@ -52,6 +52,28 @@ function contexto() {
 			return cliente ? cliente.nombre : 'Sin cliente';
 		},
 
+		mensaje_flete: '',
+
+		async guardar_flete() {
+			this.mensaje_flete = '';
+			try {
+				const res = await fetch('api.php?recurso=fletes', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({
+						...this.formFlete,
+						costo: Number(this.formFlete.costo)
+					})
+				});
+				const data = await res.json();
+				if (!res.ok) throw new Error(data.error || 'no se pudo guardar el flete');
+				this.mensaje_flete = 'flete guardado';
+				this.formFlete = { cliente_id: '', chofer_id: '', unidad_id: '', origen: '', destino: '', costo: '', estatus: 'Pendiente' };
+				await this.cargarTodo();
+			} catch (error) {
+				this.mensaje_flete = error.message;
+			}
+		},
 		formato_dinero(monto) {
 			const valor = Number(monto || 0);
 			return valor.toLocaleString('es-MX', {
@@ -61,3 +83,4 @@ function contexto() {
 		}
 	};
 }
+
