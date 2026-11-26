@@ -25,6 +25,21 @@ function contexto() {
 			]);
 		},
 
+		async delete_unidad(id) {
+		  if (!id) return;
+		  try {
+		    const res = await fetch(`api.php?id=${id}`, {
+		      method: 'DELETE'
+		    });
+		    const data = await res.json();
+		    if (data.status === 'success' || res.ok) {
+		      this.Unidades = this.Unidades.filter((item) => item.id !== id);
+		    }
+		  } catch (err) {
+		    console.error('Error al borrar unidad:', err);
+		  }
+		},
+
 		async cargarRecurso(recurso, propiedad) {
 			try {
 				const res = await fetch(`api.php?recurso=${recurso}`);
