@@ -1,6 +1,47 @@
 <section>
 	<!-- Seccion de home -->
 	
+	<div x-show="fleteEditando !== null" x-cloak>
+	    <h3>editar flete</h3>
+
+	    <select x-model="formEditarFlete.cliente_id">
+	        <option value="">Sin cliente</option>
+	        <template x-for="c in Clientes" :key="c.id">
+	            <option :value="c.id" x-text="c.nombre"></option>
+	        </template>
+	    </select>
+
+	    <select x-model="formEditarFlete.chofer_id">
+	        <option value="">Sin chofer</option>
+	        <template x-for="ch in Choferes" :key="ch.id">
+	            <option :value="ch.id" x-text="ch.nombre"></option>
+	        </template>
+	    </select>
+
+	    <select x-model="formEditarFlete.unidad_id">
+	        <option value="">Sin unidad</option>
+	        <template x-for="u in Unidades" :key="u.id">
+	            <option :value="u.id" x-text="u.placas + ' (' + u.modelo + ')'"></option>
+	        </template>
+	    </select>
+
+	    <input type="text" placeholder="origen" x-model="formEditarFlete.origen">
+	    <input type="text" placeholder="destino" x-model="formEditarFlete.destino">
+	    <input type="number" step="0.01" placeholder="costo" x-model="formEditarFlete.costo">
+
+	    <select x-model="formEditarFlete.estatus">
+	        <option value="Pendiente">Pendiente</option>
+	        <option value="En Tránsito">En Tránsito</option>
+	        <option value="Entregado">Entregado</option>
+	        <option value="Pagado">Pagado</option>
+	    </select>
+
+	    <button @click="actualizar_flete()">Guardar cambios</button>
+	    <button @click="cancelar_edicion_flete()">Cancelar</button>
+	    <p x-text="mensaje_edicion_flete"></p>
+	</div>
+
+
 	<h3>Fletes Pendientes</h3>
 	<table>
 		<thead>
@@ -23,7 +64,10 @@
 					<td x-text="obtener_info_unidad(f.unidad)"></td>
 					<td x-text="obtener_nombre_cliente(f.cliente_id)"></td>
 					<td x-text="formato_dinero(f.tarifa)"></td>
-					<td><button @click="delete_flete(f.id)">Borrar</button></td>
+					<td>
+						<button @click="editar_flete(f)">Editar</button>
+						<button @click="delete_flete(f.id)">Borrar</button>
+					</td>
 				</tr>
 			</template>
 		</tbody>
@@ -51,7 +95,10 @@
 					<td x-text="obtener_info_unidad(f.unidad)"></td>
 					<td x-text="obtener_nombre_cliente(f.cliente_id)"></td>
 					<td x-text="formato_dinero(f.tarifa)"></td>
-					<td><button @click="delete_flete(f.id)">Borrar</button></td>
+					<td>
+						<button @click="editar_flete(f)">Editar</button>
+						<button @click="delete_flete(f.id)">Borrar</button>
+					</td>
 				</tr>
 			</template>
 		</tbody>
@@ -80,7 +127,10 @@
 					<td x-text="obtener_info_unidad(f.unidad)"></td>
 					<td x-text="obtener_nombre_cliente(f.cliente_id)"></td>
 					<td x-text="formato_dinero(f.tarifa)"></td>
-					<td><button @click="delete_flete(f.id)">Borrar</button></td>
+					<td>
+						<button @click="editar_flete(f)">Editar</button>
+						<button @click="delete_flete(f.id)">Borrar</button>
+					</td>
 				</tr>
 			</template>
 		</tbody>
@@ -108,7 +158,10 @@
 					<td x-text="obtener_info_unidad(f.unidad)"></td>
 					<td x-text="obtener_nombre_cliente(f.cliente_id)"></td>
 					<td x-text="formato_dinero(f.tarifa)"></td>
-					<td><button @click="delete_flete(f.id)">Borrar</button></td>
+					<td>
+						<button @click="editar_flete(f)">Editar</button>
+						<button @click="delete_flete(f.id)">Borrar</button>
+					</td>
 				</tr>
 			</template>
 		</tbody>
