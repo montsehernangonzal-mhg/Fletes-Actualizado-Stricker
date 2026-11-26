@@ -18,7 +18,7 @@
                         <td x-text="u.placas"></td>
                         <td x-text="u.modelo"></td>
                         <td x-text="u.estatus"></td>
-                        <td></td>
+                        <td><button @click="delete_unidad(u.id)">Borrar</button></td>
                     </tr>
                 </template>
             </tbody>
