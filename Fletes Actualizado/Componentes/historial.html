@@ -1,0 +1,34 @@
+<section>
+    <h2>historial completo</h2>
+    <div class="tabla">
+        <table>
+            <thead>
+                <tr>
+                    <th>fecha</th>
+                    <th>cliente</th>
+                    <th>origen</th>
+                    <th>destino</th>
+                    <th>chofer</th>
+                    <th>unidad</th>
+                    <th>estatus</th>
+                    <th>costo</th>
+                </tr>
+            </thead>
+            <tbody>
+                <template x-for="f in Historial" :key="f.id">
+                    <tr>
+                        <td x-text="f.fecha_creacion"></td>
+                        <td x-text="f.cliente_nombre || 'sin cliente'"></td>
+                        <td x-text="f.origen"></td>
+                        <td x-text="f.destino"></td>
+                        <td x-text="f.chofer_nombre || 'sin asignar'"></td>
+                        <td x-text="f.unidad_placas || 'sin asignar'"></td>
+                        <td x-text="f.estatus"></td>
+                        <td x-text="formato_dinero(f.costo)"></td>
+                    </tr>
+                </template>
+            </tbody>
+        </table>
+    </div>
+    <p x-show="Historial.length === 0">no hay fletes registrados</p>
+</section>

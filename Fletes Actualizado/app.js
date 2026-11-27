@@ -5,6 +5,12 @@ function contexto() {
 		Clientes: [],
 		Fletes: [],
 		Unidades: [],
+		Dashboard: {},
+		Reportes: { ingresos_por_cliente: [], ingresos_por_unidad: [], cuentas_por_cobrar: [] },
+		Historial: [],
+		FletesPorPagar: [],
+		cliente_seleccionado: '',
+		HistorialCliente: [],
 
 		// Formularios
 		formChofer: { nombre: '', licencia: '', estatus: 'Disponible' },
@@ -21,7 +27,11 @@ function contexto() {
 				this.cargarRecurso('clientes', 'Clientes'),
 				this.cargarRecurso('choferes', 'Choferes'),
 				this.cargarRecurso('unidades', 'Unidades'),
-				this.cargarRecurso('fletes', 'Fletes')
+				this.cargarRecurso('fletes', 'Fletes'),
+				this.cargarRecurso('dashboard', 'Dashboard'),
+				this.cargarRecurso('reportes', 'Reportes'),
+				this.cargarRecurso('historial', 'Historial'),
+				this.cargarRecurso('por_pagar', 'FletesPorPagar')
 			]);
 		},
 
@@ -39,6 +49,21 @@ function contexto() {
 				await this.cargarRecurso(recurso, propiedad);
 			} catch (e) {
 				console.error(`Error al eliminar ${recurso}:`, e);
+			}
+		},
+
+		async cargar_historial_cliente() {
+			if (!this.cliente_seleccionado) {
+				this.HistorialCliente = [];
+				return;
+			}
+			try {
+				const res = await fetch(`api.php?recurso=historial&cliente_id=${this.cliente_seleccionado}`);
+				if (!res.ok) throw new Error('no se pudo cargar el historial');
+				this.HistorialCliente = await res.json();
+			} catch (error) {
+				console.error(error);
+				this.HistorialCliente = [];
 			}
 		},
 
@@ -72,6 +97,14 @@ function contexto() {
 		obtener_nombre_cliente(id) {
 			const cliente = this.Clientes.find(cl => Number(cl.id) === Number(id));
 			return cliente ? cliente.nombre : 'Sin cliente';
+		},
+
+		obtener_cliente_seleccionado() {
+			return this.Clientes.find(cliente => Number(cliente.id) === Number(this.cliente_seleccionado)) || null;
+		},
+
+		es_en_transito(estatus) {
+			return String(estatus || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '') === 'En Transito';
 		},
 
 		mensaje_flete: '',

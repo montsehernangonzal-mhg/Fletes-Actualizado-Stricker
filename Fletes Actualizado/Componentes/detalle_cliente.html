@@ -1,0 +1,46 @@
+<section>
+    <h2>historial por cliente</h2>
+
+    <label for="cliente_historial">cliente</label>
+    <select id="cliente_historial" x-model="cliente_seleccionado" x-on:change="cargar_historial_cliente()">
+        <option value="">selecciona un cliente</option>
+        <template x-for="cliente in Clientes" :key="cliente.id">
+            <option :value="cliente.id" x-text="cliente.nombre"></option>
+        </template>
+    </select>
+
+    <div x-show="obtener_cliente_seleccionado()">
+        <p>telefono: <span x-text="obtener_cliente_seleccionado()?.telefono || 'sin telefono'"></span></p>
+        <p>saldo pendiente: <span x-text="formato_dinero(obtener_cliente_seleccionado()?.saldo_pendiente)"></span></p>
+    </div>
+
+    <div class="tabla" x-show="cliente_seleccionado">
+        <table>
+            <thead>
+                <tr>
+                    <th>fecha</th>
+                    <th>origen</th>
+                    <th>destino</th>
+                    <th>chofer</th>
+                    <th>unidad</th>
+                    <th>estatus</th>
+                    <th>costo</th>
+                </tr>
+            </thead>
+            <tbody>
+                <template x-for="f in HistorialCliente" :key="f.id">
+                    <tr>
+                        <td x-text="f.fecha_creacion"></td>
+                        <td x-text="f.origen"></td>
+                        <td x-text="f.destino"></td>
+                        <td x-text="f.chofer_nombre || 'sin asignar'"></td>
+                        <td x-text="f.unidad_placas || 'sin asignar'"></td>
+                        <td x-text="f.estatus"></td>
+                        <td x-text="formato_dinero(f.costo)"></td>
+                    </tr>
+                </template>
+            </tbody>
+        </table>
+    </div>
+    <p x-show="cliente_seleccionado && HistorialCliente.length === 0">este cliente no tiene fletes</p>
+</section>

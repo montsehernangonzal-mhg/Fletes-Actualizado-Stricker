@@ -28,3 +28,20 @@ header nav {
     border-radius: 6px;
     flex-grow: auto;
 }
+
+.indicadores {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 12px;
+}
+
+.indicadores article {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 12px;
+}
+
+.indicadores h3,
+.indicadores p {
+    margin: 4px 0;
+}

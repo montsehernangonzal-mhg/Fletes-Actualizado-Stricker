@@ -1,0 +1,58 @@
+<section>
+    <h2>reportes de ingresos</h2>
+
+    <h3>ingresos por cliente</h3>
+    <div class="tabla">
+        <table>
+            <thead>
+                <tr><th>cliente</th><th>fletes completados</th><th>ingresos</th></tr>
+            </thead>
+            <tbody>
+                <template x-for="r in Reportes.ingresos_por_cliente" :key="r.cliente_id">
+                    <tr>
+                        <td x-text="r.cliente_nombre"></td>
+                        <td x-text="r.total_fletes"></td>
+                        <td x-text="formato_dinero(r.ingresos)"></td>
+                    </tr>
+                </template>
+            </tbody>
+        </table>
+    </div>
+
+    <h3>ingresos por unidad</h3>
+    <div class="tabla">
+        <table>
+            <thead>
+                <tr><th>placas</th><th>modelo</th><th>fletes completados</th><th>ingresos</th></tr>
+            </thead>
+            <tbody>
+                <template x-for="r in Reportes.ingresos_por_unidad" :key="r.unidad_id">
+                    <tr>
+                        <td x-text="r.placas"></td>
+                        <td x-text="r.modelo"></td>
+                        <td x-text="r.total_fletes"></td>
+                        <td x-text="formato_dinero(r.ingresos)"></td>
+                    </tr>
+                </template>
+            </tbody>
+        </table>
+    </div>
+
+    <h3>cuentas por cobrar</h3>
+    <div class="tabla">
+        <table>
+            <thead>
+                <tr><th>cliente</th><th>telefono</th><th>saldo</th></tr>
+            </thead>
+            <tbody>
+                <template x-for="r in Reportes.cuentas_por_cobrar" :key="r.cliente_id">
+                    <tr>
+                        <td x-text="r.cliente_nombre"></td>
+                        <td x-text="r.telefono"></td>
+                        <td x-text="formato_dinero(r.saldo_pendiente)"></td>
+                    </tr>
+                </template>
+            </tbody>
+        </table>
+    </div>
+</section>

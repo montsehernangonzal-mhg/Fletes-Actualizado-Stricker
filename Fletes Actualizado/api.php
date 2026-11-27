@@ -70,6 +70,10 @@ function responder($status_code, $data) {
     echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
 }
 
+function normalizar_estatus($estatus) {
+    return str_replace(["\u{00e1}", "\u{00c1}"], ['a', 'A'], trim((string)$estatus));
+}
+
 // ==========================================
 // 3. CLIENTES
 // ==========================================
@@ -285,7 +289,7 @@ function create_flete($pdo, $data) {
         return;
     }
 
-    $estatus = $data['estatus'] ?? 'Pendiente';
+    $estatus = normalizar_estatus($data['estatus'] ?? 'Pendiente');
     $clienteId = !empty($data['cliente_id']) ? (int)$data['cliente_id'] : null;
     $choferId = !empty($data['chofer_id']) ? (int)$data['chofer_id'] : null;
     $unidadId = !empty($data['unidad_id']) ? (int)$data['unidad_id'] : null;
@@ -305,7 +309,7 @@ function create_flete($pdo, $data) {
             ':estatus' => $estatus
         ]);
 
-        if ($estatus === 'En Tránsito') {
+        if ($estatus === 'En Transito') {
             if ($choferId) {
                 $pdo->prepare("UPDATE choferes SET estatus = 'En Ruta' WHERE id = :id")->execute([':id' => $choferId]);
             }
@@ -343,7 +347,7 @@ function update_flete($pdo, $id, $data) {
         return;
     }
 
-    $nuevoEstatus = $data['estatus'] ?? $actual['estatus'];
+    $nuevoEstatus = normalizar_estatus($data['estatus'] ?? $actual['estatus']);
     $origen = $data['origen'] ?? $actual['origen'];
     $destino = $data['destino'] ?? $actual['destino'];
     $costo = isset($data['costo']) ? (float)$data['costo'] : (float)$actual['costo'];
@@ -369,7 +373,7 @@ function update_flete($pdo, $id, $data) {
         ]);
 
         // Sincronizar disponibilidad de chofer y unidad
-        if ($nuevoEstatus === 'En Tránsito') {
+        if ($nuevoEstatus === 'En Transito') {
             if ($choferId) {
                 $pdo->prepare("UPDATE choferes SET estatus = 'En Ruta' WHERE id = :id")->execute([':id' => $choferId]);
             }
@@ -417,6 +421,73 @@ function delete_flete($pdo, $id) {
         : responder(404, ["mensaje" => "Flete no encontrado"]);
 }
 
+function get_dashboard($pdo) {
+    $sql = "SELECT
+                COUNT(*) AS total_fletes,
+                SUM(CASE WHEN estatus = 'Pendiente' THEN 1 ELSE 0 END) AS pendientes,
+                SUM(CASE WHEN lower(replace(estatus, char(225), 'a')) = 'en transito' THEN 1 ELSE 0 END) AS en_transito,
+                COALESCE(SUM(CASE WHEN estatus IN ('Entregado', 'Pagado') THEN costo ELSE 0 END), 0) AS ingresos_confirmados
+            FROM fletes";
+    $resumen = $pdo->query($sql)->fetch();
+    $resumen['cuentas_por_cobrar'] = (float)$pdo->query("SELECT COALESCE(SUM(saldo_pendiente), 0) FROM clientes")->fetchColumn();
+    responder(200, $resumen);
+}
+
+function get_historial($pdo, $cliente_id = null) {
+    $sql = "SELECT f.*, c.nombre AS cliente_nombre, ch.nombre AS chofer_nombre,
+                   u.placas AS unidad_placas, u.modelo AS unidad_modelo
+            FROM fletes f
+            LEFT JOIN clientes c ON f.cliente_id = c.id
+            LEFT JOIN choferes ch ON f.chofer_id = ch.id
+            LEFT JOIN unidades u ON f.unidad_id = u.id";
+    if ($cliente_id) {
+        $stmt = $pdo->prepare($sql . " WHERE f.cliente_id = :cliente_id ORDER BY f.fecha_creacion DESC, f.id DESC");
+        $stmt->execute([':cliente_id' => $cliente_id]);
+        responder(200, $stmt->fetchAll());
+        return;
+    }
+    responder(200, $pdo->query($sql . " ORDER BY f.fecha_creacion DESC, f.id DESC")->fetchAll());
+}
+
+function get_fletes_por_pagar($pdo) {
+    $sql = "SELECT f.*, c.nombre AS cliente_nombre, c.telefono AS cliente_telefono,
+                   ch.nombre AS chofer_nombre, u.placas AS unidad_placas
+            FROM fletes f
+            LEFT JOIN clientes c ON f.cliente_id = c.id
+            LEFT JOIN choferes ch ON f.chofer_id = ch.id
+            LEFT JOIN unidades u ON f.unidad_id = u.id
+            WHERE f.estatus = 'Entregado'
+            ORDER BY f.fecha_creacion DESC, f.id DESC";
+    responder(200, $pdo->query($sql)->fetchAll());
+}
+
+function get_reportes($pdo) {
+    $ingresos_cliente = $pdo->query("SELECT c.id AS cliente_id, c.nombre AS cliente_nombre,
+                                          COUNT(f.id) AS total_fletes,
+                                          COALESCE(SUM(f.costo), 0) AS ingresos
+                                   FROM clientes c
+                                   LEFT JOIN fletes f ON f.cliente_id = c.id AND f.estatus IN ('Entregado', 'Pagado')
+                                   GROUP BY c.id, c.nombre
+                                   ORDER BY ingresos DESC")->fetchAll();
+    $ingresos_unidad = $pdo->query("SELECT u.id AS unidad_id, u.placas, u.modelo,
+                                         COUNT(f.id) AS total_fletes,
+                                         COALESCE(SUM(f.costo), 0) AS ingresos
+                                  FROM unidades u
+                                  LEFT JOIN fletes f ON f.unidad_id = u.id AND f.estatus IN ('Entregado', 'Pagado')
+                                  GROUP BY u.id, u.placas, u.modelo
+                                  ORDER BY ingresos DESC")->fetchAll();
+    $cuentas = $pdo->query("SELECT id AS cliente_id, nombre AS cliente_nombre,
+                                  telefono, saldo_pendiente
+                           FROM clientes
+                           WHERE saldo_pendiente > 0
+                           ORDER BY saldo_pendiente DESC")->fetchAll();
+    responder(200, [
+        'ingresos_por_cliente' => $ingresos_cliente,
+        'ingresos_por_unidad' => $ingresos_unidad,
+        'cuentas_por_cobrar' => $cuentas
+    ]);
+}
+
 // ==========================================
 // 7. ENRUTADOR PRINCIPAL
 // ==========================================
@@ -424,6 +495,7 @@ $pdo = get_db_connection();
 $method = $_SERVER['REQUEST_METHOD'];
 $recurso = $_GET['recurso'] ?? 'clientes';
 $id = $_GET['id'] ?? null;
+$cliente_id = $_GET['cliente_id'] ?? null;
 $input = json_decode(file_get_contents('php://input'), true) ?? [];
 
 switch ($recurso) {
@@ -456,6 +528,26 @@ switch ($recurso) {
         elseif ($method === 'POST') create_flete($pdo, $input);
         elseif ($method === 'PUT') update_flete($pdo, $id, $input);
         elseif ($method === 'DELETE') delete_flete($pdo, $id);
+        else responder(405, ["error" => "Método HTTP no permitido"]);
+        break;
+
+    case 'dashboard':
+        if ($method === 'GET') get_dashboard($pdo);
+        else responder(405, ["error" => "Método HTTP no permitido"]);
+        break;
+
+    case 'historial':
+        if ($method === 'GET') get_historial($pdo, $cliente_id);
+        else responder(405, ["error" => "Método HTTP no permitido"]);
+        break;
+
+    case 'por_pagar':
+        if ($method === 'GET') get_fletes_por_pagar($pdo);
+        else responder(405, ["error" => "Método HTTP no permitido"]);
+        break;
+
+    case 'reportes':
+        if ($method === 'GET') get_reportes($pdo);
         else responder(405, ["error" => "Método HTTP no permitido"]);
         break;
 
